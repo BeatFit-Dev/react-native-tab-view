@@ -128,8 +128,7 @@ export default class TabBar<T: *> extends React.Component<Props<T>, State> {
     }
 
     if (
-      prevProps.navigationState.routes.length !==
-        this.props.navigationState.routes.length ||
+      prevProps.navigationState.routes !== this.props.navigationState.routes ||
       prevProps.layout.width !== this.props.layout.width
     ) {
       this._resetScroll(this.props.navigationState.index, false);
@@ -188,7 +187,7 @@ export default class TabBar<T: *> extends React.Component<Props<T>, State> {
     this._adjustScroll(value);
   };
 
-  _renderLabel = (scene: Scene<*>) => {
+  _renderLabel = (scene: Scene<*>, isFocused: boolean) => {
     if (typeof this.props.renderLabel !== 'undefined') {
       return this.props.renderLabel(scene);
     }
@@ -196,8 +195,9 @@ export default class TabBar<T: *> extends React.Component<Props<T>, State> {
     if (typeof label !== 'string') {
       return null;
     }
+
     return (
-      <Animated.Text style={[styles.tabLabel, this.props.labelStyle]}>
+      <Animated.Text style={[styles.tabLabel, this.props.labelStyle, isFocused ? {color: '#2ab0b3'} : {color: '#8e8e93'}]}>
         {label}
       </Animated.Text>
     );
@@ -407,14 +407,15 @@ export default class TabBar<T: *> extends React.Component<Props<T>, State> {
               const outputRange = inputRange.map(
                 inputIndex => (inputIndex === i ? 1 : 0.7)
               );
-              const opacity = Animated.multiply(
-                this.state.visibility,
-                position.interpolate({
-                  inputRange,
-                  outputRange,
-                })
-              );
-              const label = this._renderLabel({ route });
+              // const opacity = Animated.multiply(
+              //   this.state.visibility,
+              //   position.interpolate({
+              //     inputRange,
+              //     outputRange,
+              //   })
+              // );
+              const isFocused = i === navigationState.index;
+              const label = this._renderLabel({ route }, isFocused);
               const icon = this.props.renderIcon
                 ? this.props.renderIcon({ route })
                 : null;
@@ -424,7 +425,7 @@ export default class TabBar<T: *> extends React.Component<Props<T>, State> {
 
               const tabStyle = {};
 
-              tabStyle.opacity = opacity;
+              tabStyle.opacity = 1;
 
               if (icon) {
                 if (label) {
@@ -460,7 +461,6 @@ export default class TabBar<T: *> extends React.Component<Props<T>, State> {
                   ? accessibilityLabel
                   : this.props.getLabelText({ route });
 
-              const isFocused = i === navigationState.index;
 
               return (
                 <TouchableItem
@@ -520,14 +520,7 @@ const styles = StyleSheet.create({
     overflow: Platform.OS === 'web' ? ('auto': any) : 'scroll',
   },
   tabBar: {
-    backgroundColor: '#2196f3',
-    elevation: 4,
-    shadowColor: 'black',
-    shadowOpacity: 0.1,
-    shadowRadius: StyleSheet.hairlineWidth,
-    shadowOffset: {
-      height: StyleSheet.hairlineWidth,
-    },
+    backgroundColor: '#fff',
     // We don't need zIndex on Android, disable it since it's buggy
     zIndex: Platform.OS === 'android' ? 0 : 1,
   },
@@ -537,7 +530,7 @@ const styles = StyleSheet.create({
   },
   tabLabel: {
     backgroundColor: 'transparent',
-    color: 'white',
+    color: '#2ab0b3',
     margin: 8,
   },
   tabItem: {
@@ -559,7 +552,7 @@ const styles = StyleSheet.create({
     bottom: 0,
   },
   indicator: {
-    backgroundColor: '#ffeb3b',
+    backgroundColor: '#2ab0b3',
     position: 'absolute',
     left: 0,
     bottom: 0,
@@ -567,3 +560,4 @@ const styles = StyleSheet.create({
     height: 2,
   },
 });
+
