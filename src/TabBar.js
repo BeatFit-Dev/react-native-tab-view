@@ -197,7 +197,7 @@ export default class TabBar<T: *> extends React.Component<Props<T>, State> {
     }
 
     return (
-      <Animated.Text style={[styles.tabLabel, this.props.labelStyle, isFocused ? {color: '#2ab0b3'} : {color: '#8e8e93'}]}>
+      <Animated.Text style={[styles.tabLabel, this.props.labelStyle, isFocused ? {color: '#ff6c77'} : {color: '#8e8e93'}]}>
         {label}
       </Animated.Text>
     );
